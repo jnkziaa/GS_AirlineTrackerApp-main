@@ -14,7 +14,6 @@ import java.util.*;
 public class APIConnector {
 
     private final String urlString;
-    private final String regex = ".*\": null(,)?\\r\\n";
     private String removeNull = "";
     private JSONObject getAPI;
     private JSONObject getAirlinName;
@@ -29,39 +28,7 @@ public class APIConnector {
     }
 
 
-    public JSONObject getJSONObject(String query){
-        try {
-            URL url = new URL(urlString + query);
-
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            conn.connect();
-
-            //Check if connect is made
-            int responseCode = conn.getResponseCode();
-
-            if (responseCode != 200) {
-                throw new RuntimeException("HttpResponseCode: " + responseCode);
-            } else {
-
-                StringBuilder informationString = new StringBuilder();
-                Scanner scanner = new Scanner(url.openStream());
-
-                while (scanner.hasNext()) {
-                    informationString.append(scanner.nextLine());
-                }
-                scanner.close();
-
-                JSONParser parse = new JSONParser();
-
-                return (JSONObject) parse.parse(String.valueOf(informationString));
-            }
-        }catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
+    //Parses API and stores data in a Hashmap, and replaces all null values with 0.
     public void getFullApi(){
 
         try {
@@ -87,15 +54,11 @@ public class APIConnector {
                     informationString.append(removeNull.replaceAll("null", "0"));
 
                 }
-                // System.out.println(informationString);
                 scanner.close();
 
                 String actualData = informationString.substring(informationString.indexOf("["), informationString.lastIndexOf("]")+1);
                 JSONParser parse = new JSONParser();
                 dataObject = (JSONArray) parse.parse(actualData);
-
-
-                JSONObject aviationData = (JSONObject) dataObject.get(0);
 
                 for(int i = 0; i < 100; i++){
                     //Loops through the API and stores the flight# and airline name in key/value pairs.
@@ -109,10 +72,11 @@ public class APIConnector {
         }catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println("In fullAPI method!");
+
         System.out.println(getAirlineList);
     }
 
+    //Updates the suggestion field in the Textfields based off inputs within it.
     public void getAirline(TextField airline, TextField flight){
         String flights = flight.getText();
         String namesTest;
@@ -194,7 +158,6 @@ public class APIConnector {
                     searchData = (JSONObject) dataObject.get(i);
                 }
             }
-            System.out.println(searchData);
             return searchData;
     }
 

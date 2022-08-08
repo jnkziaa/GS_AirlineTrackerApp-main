@@ -45,11 +45,6 @@ public class MainController implements Initializable {
     @FXML
     private Text depAirport, arrAirport;
 
-    @FXML
-    private TextArea depDatas;
-    @FXML
-    private TextArea arrDatas;
-
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -66,6 +61,7 @@ public class MainController implements Initializable {
 
         dpDate.setDayCellFactory(blockedDates);
         String newString = String.format("?airline_name=&flight_number=&access_key=%s", accessKey);
+
         try {
             apiConnector = new APIConnector("http://api.aviationstack.com/v1/flights"+newString);
             apiConnector.getFullApi();
@@ -91,6 +87,10 @@ public class MainController implements Initializable {
 
     }
 
+   /*Main method in file.  Changes api data to JSONObject and takes
+    several keys in the data into different methods in file
+    @param flightNumbers
+    */
     private void getCurrentInfo(String flightNum) throws MalformedURLException, ParseException {
         JSONObject jsonObject = apiConnector.findData(flightNum);
         System.out.println(jsonObject);
